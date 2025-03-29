@@ -1,0 +1,18 @@
+[29-Mar-2025 12:39:32 UTC] Creating shared plan with name: netflix
+[29-Mar-2025 12:39:32 UTC] Total cost: 30
+[29-Mar-2025 12:39:32 UTC] Owner ID: 1
+[29-Mar-2025 12:39:32 UTC] Participant emails: gay@gmail.com
+[29-Mar-2025 12:39:32 UTC] Created shared plan with ID: 1
+[29-Mar-2025 12:39:32 UTC] Added member: gay@gmail.com
+[29-Mar-2025 12:39:32 UTC] Transaction committed successfully
+[29-Mar-2025 13:48:31 UTC] Creating shared plan with name: netflix
+[29-Mar-2025 13:48:31 UTC] Total cost: 30
+[29-Mar-2025 13:48:31 UTC] Owner ID: 1
+[29-Mar-2025 13:48:31 UTC] Participant emails: gayu@gmail.com
+[29-Mar-2025 13:48:31 UTC] Created shared plan with ID: 2
+[29-Mar-2025 13:48:31 UTC] Added member: gayu@gmail.com
+[29-Mar-2025 13:48:31 UTC] Transaction committed successfully
+[29-Mar-2025 15:27:49 UTC] PHP Warning:  Undefined array key "user_email" in C:\xampp\htdocs\subscription_tracker\shared.php on line 365
+[29-Mar-2025 15:27:49 UTC] PHP Warning:  Undefined array key "user_email" in C:\xampp\htdocs\subscription_tracker\shared.php on line 365
+[29-Mar-2025 15:28:26 UTC] PHP Warning:  Undefined array key "user_email" in C:\xampp\htdocs\subscription_tracker\shared.php on line 365
+[29-Mar-2025 15:28:26 UTC] PHP Warning:  Undefined array key "user_email" in C:\xampp\htdocs\subscription_tracker\shared.php on line 365
