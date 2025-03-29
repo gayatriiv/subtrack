@@ -31,13 +31,10 @@ Subtrack is a simple subscription manager that helps users track their day to da
 ### Steps
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/subtrack.git
+   git clone https://github.com/gayatriiv/subtrack.git
    cd subtrack
    ```
 2. Install XAMPP for PHP backend- start Apache and Mysql
-   ```sh
-   npm install
-   ```
 3. Set up environment variables 
 4. Open localhost/phpmyadmin in your browser.
    
