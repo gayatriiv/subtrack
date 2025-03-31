@@ -8,6 +8,19 @@ requireLogin();
 
 $userId = getCurrentUserId();
 
+// Clear any budget-related messages
+if (isset($_SESSION['success']) && strpos($_SESSION['success'], 'Budget') !== false) {
+    unset($_SESSION['success']);
+}
+
+// Only keep shared subscription related messages
+$success_message = $_SESSION['success'] ?? '';
+$error_message = $_SESSION['error'] ?? '';
+
+// Clear session messages after retrieving them
+unset($_SESSION['success']);
+unset($_SESSION['error']);
+
 try {
     // Fetch user's shared subscriptions
     $stmt = $pdo->prepare("
@@ -15,6 +28,7 @@ try {
             sp.id,
             sp.name,
             sp.total_cost as cost,
+            sp.owner_id,
             (SELECT COUNT(*) FROM shared_members WHERE shared_plan_id = sp.id) as participants,
             sp.total_cost / (SELECT COUNT(*) + 1 FROM shared_members WHERE shared_plan_id = sp.id) as share_amount,
             u.email as creator_email
@@ -214,6 +228,83 @@ try {
             border: 1px solid rgba(52, 199, 89, 0.3);
             color: #34c759;
         }
+
+        .subscription-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            transition: background-color 0.2s;
+        }
+
+        .edit-btn {
+            background: #4a90e2;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+        }
+
+        .edit-btn:hover {
+            background: #357abd;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close-modal:hover {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -221,29 +312,19 @@ try {
         <?php include 'sidebar.php'; ?>
         
         <div class="main-content">
+            <?php if ($success_message): ?>
+                <div class="alert alert-success">
+                    <?php echo htmlspecialchars($success_message); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($error_message): ?>
+                <div class="alert alert-error">
+                    <?php echo htmlspecialchars($error_message); ?>
+                </div>
+            <?php endif; ?>
+
             <div class="grid-container">
-                <?php if (isset($_SESSION['error']) || isset($_SESSION['success'])): ?>
-                    <div class="message-container">
-                        <?php if (isset($_SESSION['error'])): ?>
-                            <div class="alert alert-error">
-                                <?php 
-                                echo $_SESSION['error'];
-                                unset($_SESSION['error']);
-                                ?>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if (isset($_SESSION['success'])): ?>
-                            <div class="alert alert-success">
-                                <?php 
-                                echo $_SESSION['success'];
-                                unset($_SESSION['success']);
-                                ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
-
                 <!-- Create New Shared Subscription -->
                 <div class="card">
                     <h2>Create New Shared Subscription</h2>
@@ -284,6 +365,16 @@ try {
                                         <p>Participants: <?php echo $sub['participants']; ?></p>
                                         <p>Created by: <?php echo htmlspecialchars($sub['creator_email']); ?></p>
                                     </div>
+                                    <?php if ($sub['owner_id'] == $userId): ?>
+                                    <div class="subscription-actions">
+                                        <button class="edit-btn" onclick="openEditModal(<?php echo $sub['id']; ?>, '<?php echo htmlspecialchars($sub['name'], ENT_QUOTES); ?>', <?php echo $sub['cost']; ?>)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button class="delete-btn" onclick="confirmDelete(<?php echo $sub['id']; ?>, '<?php echo htmlspecialchars($sub['name'], ENT_QUOTES); ?>')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -314,5 +405,53 @@ try {
             </div>
         </div>
     </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Shared Subscription</h3>
+                <button class="close-modal" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="editForm" action="update_shared_plan.php" method="POST">
+                <input type="hidden" id="edit_plan_id" name="plan_id">
+                <div class="form-group">
+                    <label for="edit_name">Subscription Name</label>
+                    <input type="text" id="edit_name" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit_cost">Total Cost ($)</label>
+                    <input type="number" id="edit_cost" name="cost" class="form-control" step="0.01" min="0.01" required>
+                </div>
+                <button type="submit" class="btn-primary">Update Subscription</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal(id, name, cost) {
+            document.getElementById('edit_plan_id').value = id;
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_cost').value = cost;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        function confirmDelete(id, name) {
+            if (confirm(`Are you sure you want to delete the shared subscription "${name}"?`)) {
+                window.location.href = `delete_shared_plan.php?id=${id}`;
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('editModal')) {
+                closeEditModal();
+            }
+        }
+    </script>
 </body>
 </html>

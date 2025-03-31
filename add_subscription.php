@@ -11,9 +11,8 @@ $userId = getCurrentUserId();
 // Get categories
 try {
     $stmt = $pdo->prepare("
-        SELECT id, name 
+        SELECT DISTINCT id, name 
         FROM categories 
-        WHERE name IN ('Education', 'Fitness', 'Gaming', 'Music', 'News', 'Software', 'Streaming', 'Utilities', 'Other')
         ORDER BY 
             CASE name 
                 WHEN 'Education' THEN 1
@@ -23,8 +22,7 @@ try {
                 WHEN 'News' THEN 5
                 WHEN 'Software' THEN 6
                 WHEN 'Streaming' THEN 7
-                WHEN 'Utilities' THEN 8
-                WHEN 'Other' THEN 9
+                WHEN 'Other' THEN 8
             END
     ");
     $stmt->execute();
@@ -48,6 +46,7 @@ try {
         .form-container {
             max-width: 600px;
             margin: 0 auto;
+            padding: 20px;
         }
         
         .form-row {
@@ -60,6 +59,28 @@ try {
             flex: 1;
         }
         
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
         .submit-btn {
             background: #4CAF50;
             color: white;
@@ -70,6 +91,10 @@ try {
             font-size: 16px;
             transition: background 0.3s;
             width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .submit-btn:hover {
@@ -77,13 +102,6 @@ try {
         }
 
         select.form-control {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            padding: 8px 12px;
-            color: white;
-            font-size: 14px;
-            width: 100%;
             cursor: pointer;
             appearance: auto;
         }
@@ -94,9 +112,23 @@ try {
             padding: 8px;
         }
 
-        select.form-control:focus {
-            outline: none;
-            border-color: #4CAF50;
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.2);
         }
     </style>
 </head>
@@ -110,38 +142,40 @@ try {
             </div>
             
             <div class="card">
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="alert alert-error">
+                        <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($_SESSION['error']); ?>
+                        <?php unset($_SESSION['error']); ?>
+                    </div>
+                <?php endif; ?>
+
                 <form action="process_subscription.php" method="POST" class="form-container">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Subscription Name</label>
-                            <input type="text" id="name" name="name" class="form-control" required>
+                            <input type="text" id="name" name="name" class="form-control" required autocomplete="off">
                         </div>
                         <div class="form-group">
                             <label for="cost">Cost</label>
-                            <input type="number" id="cost" name="cost" step="0.01" class="form-control" required>
+                            <input type="number" id="cost" name="cost" step="0.01" class="form-control" required autocomplete="off">
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
                             <label for="category">Category</label>
-                            <select name="category" id="category" class="form-control" required>
+                            <select name="category" id="category" class="form-control" required autocomplete="off">
                                 <option value="" disabled selected>Select Category</option>
-                                <option value="streaming">Streaming</option>
-                                <option value="fitness">Fitness</option>
-                                <option value="music">Music</option>
-                                <option value="software">Software</option>
-                                <option value="news">News</option>
-                                <option value="utilities">Utilities</option>
-                                <option value="magazines">Magazines</option>
-                                <option value="education">Education</option>
-                                <option value="gaming">Gaming</option>
-                                <option value="other">Other</option>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?php echo htmlspecialchars($category['id']); ?>">
+                                        <?php echo htmlspecialchars($category['name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="billing_cycle">Billing Cycle</label>
-                            <select id="billing_cycle" name="billing_cycle" class="form-control" required>
+                            <select id="billing_cycle" name="billing_cycle" class="form-control" required autocomplete="off">
                                 <option value="weekly">Weekly</option>
                                 <option value="monthly" selected>Monthly</option>
                                 <option value="quarterly">Quarterly</option>
@@ -152,7 +186,7 @@ try {
                     
                     <div class="form-group">
                         <label for="next_payment">Next Payment Date</label>
-                        <input type="date" id="next_payment" name="next_payment_date" class="form-control" required>
+                        <input type="date" id="next_payment" name="next_payment_date" class="form-control" required autocomplete="off">
                     </div>
                     
                     <div class="form-group">

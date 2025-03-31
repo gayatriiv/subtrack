@@ -9,11 +9,18 @@ requireLogin();
 $userId = getCurrentUserId();
 
 // Get user's name and budget
-$stmt = $pdo->prepare("SELECT name, monthly_budget FROM users WHERE id = ?");
+$stmt = $pdo->prepare("
+    SELECT u.name, COALESCE(bg.monthly_budget, 0) as monthly_budget 
+    FROM users u 
+    LEFT JOIN budget_goals bg ON u.id = bg.user_id 
+    WHERE u.id = ? 
+    ORDER BY bg.created_at DESC 
+    LIMIT 1
+");
 $stmt->execute([$userId]);
 $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 $userName = $userData['name'];
-$monthlyBudget = $userData['monthly_budget'] ?: 0;
+$monthlyBudget = $userData['monthly_budget'];
 
 // Get user's subscriptions with proper error handling
 try {
@@ -263,6 +270,13 @@ try {
 
             <div class="card">
                 <h3>Active Subscriptions</h3>
+                <?php if (isset($_SESSION['success'])): ?>
+                    <div class="alert alert-success" style="background: rgba(76, 175, 80, 0.1); color: #4CAF50; padding: 10px; border-radius: 4px; margin-bottom: 15px; border: 1px solid rgba(76, 175, 80, 0.2);">
+                        <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($_SESSION['success']); ?>
+                        <?php unset($_SESSION['success']); ?>
+                    </div>
+                <?php endif; ?>
+                
                 <div class="subscription-grid">
                     <?php if (empty($subscriptions)): ?>
                         <div class="subscription-card" style="display: flex; justify-content: center; align-items: center; text-align: center;">
@@ -300,11 +314,6 @@ try {
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                        <a href="add_subscription.php" class="add-subscription">
-                            <i class='bx bx-plus-circle'></i>
-                            <div>Add New</div>
-                            <div style="font-size: 14px; color: rgba(255,255,255,0.7)">Track a new subscription</div>
-                        </a>
                     <?php endif; ?>
                 </div>
             </div>

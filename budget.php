@@ -11,7 +11,13 @@ $userId = getCurrentUserId();
 // Get user's budget and spending information
 try {
     // Get user's budget
-    $stmt = $pdo->prepare("SELECT monthly_budget FROM users WHERE id = ?");
+    $stmt = $pdo->prepare("
+        SELECT monthly_budget 
+        FROM budget_goals 
+        WHERE user_id = ? 
+        ORDER BY created_at DESC 
+        LIMIT 1
+    ");
     $stmt->execute([$userId]);
     $monthlyBudget = $stmt->fetchColumn() ?: 0;
 

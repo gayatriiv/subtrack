@@ -23,7 +23,8 @@ try {
     $stmt->execute([$planId]);
     $plan = $stmt->fetch();
 
-    if (!$plan || $plan['owner_id'] !== $userId) {
+    // Convert both values to integers for comparison
+    if (!$plan || intval($plan['owner_id']) !== intval($userId)) {
         throw new Exception("You don't have permission to delete this subscription.");
     }
 

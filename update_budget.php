@@ -17,9 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $stmt = $pdo->prepare("UPDATE users SET monthly_budget = ? WHERE id = ?");
+        // Insert new budget goal
+        $stmt = $pdo->prepare("
+            INSERT INTO budget_goals (user_id, monthly_budget) 
+            VALUES (?, ?)
+        ");
         
-        if ($stmt->execute([$monthlyBudget, $userId])) {
+        if ($stmt->execute([$userId, $monthlyBudget])) {
             $_SESSION['success'] = 'Budget updated successfully';
         } else {
             $_SESSION['error'] = 'Failed to update budget';
