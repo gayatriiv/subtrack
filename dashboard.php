@@ -104,77 +104,23 @@ try {
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         /* Dashboard specific styles */
-        .subscription-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        .subscription-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
-            transition: transform 0.3s ease;
-            position: relative;
-        }
-        .subscription-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .subscription-header {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
+            padding: 0 20px;
         }
-        .subscription-name {
-            font-weight: 500;
-            font-size: 18px;
-        }
-        .subscription-category {
-            font-size: 12px;
-            padding: 4px 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        .subscription-cost {
+
+        .header h2 {
             font-size: 24px;
-            color: #4CAF50;
-            margin: 10px 0;
         }
-        .subscription-details {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            margin-top: 10px;
-        }
-        .subscription-actions {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: none;
+
+        .header-buttons {
+            display: flex;
             gap: 10px;
         }
-        .subscription-card:hover .subscription-actions {
-            display: flex;
-        }
-        .action-icon {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 18px;
-            transition: color 0.3s;
-            cursor: pointer;
-        }
-        .action-icon:hover {
-            color: white;
-        }
-        .edit-icon:hover {
-            color: #4CAF50;
-        }
-        .delete-icon:hover {
-            color: #f44336;
-        }
+
         .budget-info {
             display: flex;
             justify-content: space-between;
@@ -182,54 +128,105 @@ try {
             font-size: 16px;
             color: rgba(255,255,255,0.9);
         }
+
         .progress-container {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             height: 10px;
             overflow: hidden;
+            margin-bottom: 20px;
         }
+
         .progress-bar {
             height: 100%;
             background: linear-gradient(to right, #4CAF50, #81c784);
             transition: width 0.3s ease;
         }
-        .header {
+
+        .subscription-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .subscription-card {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .subscription-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .subscription-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
-        .header-buttons {
-            display: flex;
+
+        .subscription-name {
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .subscription-category {
+            font-size: 12px;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .subscription-cost {
+            font-size: 24px;
+            color: #4CAF50;
+            margin: 10px 0;
+        }
+
+        .subscription-details {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .subscription-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: none;
             gap: 10px;
         }
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 4px;
+
+        .subscription-card:hover .subscription-actions {
+            display: flex;
+        }
+
+        .action-icon {
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
-            font-weight: 500;
+            font-size: 18px;
+            transition: color 0.3s;
             cursor: pointer;
-            transition: background-color 0.3s;
+            padding: 5px;
         }
-        .btn-primary {
-            background: #4CAF50;
-            color: white;
+
+        .edit-icon:hover {
+            color: #4CAF50;
         }
-        .btn-primary:hover {
-            background: #45a049;
+
+        .delete-icon:hover {
+            color: #f44336;
         }
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .btn i {
-            font-size: 1.2em;
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.7);
         }
     </style>
 </head>
