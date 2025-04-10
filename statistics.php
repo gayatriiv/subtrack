@@ -246,7 +246,7 @@ try {
                         <?php foreach ($categorySpending as $category): ?>
                             <div class="category-item">
                                 <span class="category-name"><?php echo htmlspecialchars($category['category_name'] ?? 'Uncategorized'); ?></span>
-                                <span class="category-amount">$<?php echo number_format($category['monthly_cost'], 2); ?></span>
+                                <span class="category-amount">₹<?php echo number_format($category['monthly_cost'], 2); ?></span>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -271,7 +271,7 @@ try {
                                     </div>
                                 </div>
                                 <div class="payment-right">
-                                    <div class="payment-amount">$<?php echo number_format($payment['cost'], 2); ?></div>
+                                    <div class="payment-amount">₹<?php echo number_format($payment['cost'], 2); ?></div>
                                     <div class="payment-date">
                                         <?php echo date('M j, Y', strtotime($payment['next_payment_date'])); ?>
                                     </div>
@@ -315,72 +315,55 @@ try {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: 'rgba(255,255,255,0.7)'
+                            color: 'white'
                         }
                     }
                 }
             }
         });
 
-        // Monthly Spending Trends Chart
-        const trendCtx = document.getElementById('trendChart').getContext('2d');
-        const monthlyData = <?php echo json_encode($monthlyTrends); ?>;
+        // Monthly Trend Chart
+            // Monthly Spending Trends Chart
+    const trendData = <?php echo json_encode(array_map(function($month) {
+        return [
+            'month' => $month['month'],
+            'amount' => floatval($month['monthly_cost'])
+        ];
+    }, $spendingTrends)); ?>;
 
-        const labels = monthlyData.map(item => {
-            const date = new Date(item.month + '-01');
-            return date.toLocaleDateString('default', { month: 'short', year: 'numeric' });
-        });
-
-        const values = monthlyData.map(item => parseFloat(item.monthly_cost));
-
-        new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Monthly Spending',
-                    data: values,
-                    borderColor: '#4CAF50',
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            color: 'white'
-                        }
-                    }
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: trendData.map(d => d.month),
+            datasets: [{
+                label: 'Monthly Spending (₹)',
+                data: trendData.map(d => d.amount),
+                fill: false,
+                borderColor: '#4CAF50',
+                backgroundColor: '#4CAF50',
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    ticks: { color: 'white' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: 'white',
-                            callback: function(value) {
-                                return '$' + value;
-                            }
-                        }
-                    },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        ticks: {
-                            color: 'white'
-                        }
+                y: {
+                    ticks: { color: 'white' },
+                    grid: { color: 'rgba(255,255,255,0.1)' }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
                     }
                 }
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    });
+</script>

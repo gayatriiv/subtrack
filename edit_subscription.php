@@ -224,7 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-group">
-                    <label for="cost">Monthly Cost ($) *</label>
+                    <label for="cost">Cost (₹)</label>
                     <input type="number" id="cost" name="cost" step="0.01" value="<?php echo htmlspecialchars($subscription['cost']); ?>" required>
                 </div>
 

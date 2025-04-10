@@ -156,7 +156,7 @@ try {
                             <input type="text" id="name" name="name" class="form-control" required autocomplete="off">
                         </div>
                         <div class="form-group">
-                            <label for="cost">Cost</label>
+                            <label for="cost">Cost (₹)</label>
                             <input type="number" id="cost" name="cost" step="0.01" class="form-control" required autocomplete="off">
                         </div>
                     </div>

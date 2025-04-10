@@ -128,7 +128,7 @@ try {
                     'category' => $type,
                     'spending' => $totalCost,
                     'subscriptions' => $matches,
-                    'suggestion' => "You have multiple $type services costing \${$totalCost}/month. Consider consolidating to save money."
+                    'suggestion' => "You have multiple $type services costing ₹{$totalCost}/month. Consider consolidating to save money."
                 ];
             }
         }
@@ -323,10 +323,15 @@ $remaining = $monthlyBudget - $monthlyTotal;
         <?php include 'sidebar.php'; ?>
         
         <div class="main-content">
-            <?php if ($monthlyBudget > 0 && $monthlyTotal > $monthlyBudget): ?>
-                <div class="alert">
+            <?php if ($remaining < 0): ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Warning: Your current spending exceeds your monthly budget by ₹<?php echo number_format(abs($remaining), 2); ?>
+                </div>
+            <?php elseif ($monthlyBudget > 0 && $remaining < ($monthlyBudget * 0.1)): ?>
+                <div class="alert alert-warning">
                     <i class="fas fa-exclamation-circle"></i>
-                    Warning: Your current spending exceeds your monthly budget by $<?php echo number_format($monthlyTotal - $monthlyBudget, 2); ?>
+                    Notice: You are close to your budget limit. Remaining: ₹<?php echo number_format($remaining, 2); ?>
                 </div>
             <?php endif; ?>
 
@@ -335,18 +340,16 @@ $remaining = $monthlyBudget - $monthlyTotal;
                 <div class="budget-card">
                     <h2>Monthly Budget Overview</h2>
                     <div class="budget-stat">
-                        <span class="stat-label">Total Budget:</span>
-                        <span class="stat-value">$<?php echo number_format($monthlyBudget, 2); ?></span>
+                        <span>Total Budget:</span>
+                        <span class="budget-value">₹<?php echo number_format($monthlyBudget, 2); ?></span>
                     </div>
                     <div class="budget-stat">
-                        <span class="stat-label">Total Spending:</span>
-                        <span class="stat-value">$<?php echo number_format($monthlyTotal, 2); ?></span>
+                        <span>Total Spending:</span>
+                        <span class="budget-value">₹<?php echo number_format($monthlyTotal, 2); ?></span>
                     </div>
-                    <div class="budget-stat">
-                        <span class="stat-label">Remaining:</span>
-                        <span class="stat-value <?php echo $remaining < 0 ? 'negative' : 'positive'; ?>">
-                            $<?php echo number_format($remaining, 2); ?>
-                        </span>
+                    <div class="budget-stat <?php echo ($remaining < 0) ? 'overspent' : 'within-budget'; ?>">
+                        <span>Remaining:</span>
+                        <span class="budget-value">₹<?php echo number_format(abs($remaining), 2); ?></span>
                     </div>
                 </div>
 
@@ -355,9 +358,8 @@ $remaining = $monthlyBudget - $monthlyTotal;
                     <h2>Set Monthly Budget</h2>
                     <form action="update_budget.php" method="POST" class="budget-form">
                         <div class="form-group">
-                            <label for="monthly_budget">Monthly Budget Amount ($)</label>
-                            <input type="number" id="monthly_budget" name="monthly_budget" step="0.01" min="0" 
-                                   value="<?php echo $monthlyBudget; ?>" required>
+                            <label for="monthly_budget">Monthly Budget Amount (₹)</label>
+                            <input type="number" id="monthly_budget" name="monthly_budget" step="0.01" class="form-control" value="<?php echo number_format($monthlyBudget, 2); ?>" required>
                         </div>
                         <button type="submit" class="submit-btn">Update Budget</button>
                     </form>
@@ -383,7 +385,7 @@ $remaining = $monthlyBudget - $monthlyTotal;
                                         <?php foreach ($saving['subscriptions'] as $sub): ?>
                                             <div class="subscription-item">
                                                 <span><?php echo htmlspecialchars($sub['name']); ?></span>
-                                                <span>$<?php echo number_format($sub['monthly_cost'], 2); ?>/mo</span>
+                                                <span>₹<?php echo number_format($sub['monthly_cost'], 2); ?>/mo</span>
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
@@ -397,7 +399,6 @@ $remaining = $monthlyBudget - $monthlyTotal;
     </div>
 
     <script>
-        // Add any JavaScript for interactivity here
     </script>
 </body>
 </html> 

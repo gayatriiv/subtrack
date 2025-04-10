@@ -335,8 +335,8 @@ try {
                         </div>
                         
                         <div class="form-group">
-                            <label for="total_cost">Total Cost ($) *</label>
-                            <input type="number" id="total_cost" name="total_cost" class="form-control" min="0.01" step="0.01" required>
+                            <label for="cost">Total Cost (₹) *</label>
+                            <input type="number" id="cost" name="cost" step="0.01" class="form-control" required>
                         </div>
                         
                         <div class="form-group">
@@ -360,8 +360,8 @@ try {
                                 <div class="subscription-item">
                                     <h3><?php echo htmlspecialchars($sub['name']); ?></h3>
                                     <div class="subscription-details">
-                                        <p>Total Cost: $<?php echo number_format($sub['cost'], 2); ?></p>
-                                        <p>My Share: $<?php echo number_format($sub['share_amount'], 2); ?></p>
+                                        <p>Total Cost: ₹<?php echo number_format($sub['cost'], 2); ?></p>
+                                        <p>My Share: ₹<?php echo number_format($sub['share_amount'], 2); ?></p>
                                         <p>Participants: <?php echo $sub['participants']; ?></p>
                                         <p>Created by: <?php echo htmlspecialchars($sub['creator_email']); ?></p>
                                     </div>
@@ -384,21 +384,33 @@ try {
                 <!-- Available Shared Subscriptions -->
                 <div class="card">
                     <h2>Available Shared Subscriptions</h2>
-                    <?php if (empty($availableSubscriptions)): ?>
-                        <div class="empty-state">No available shared subscriptions to join.</div>
-                    <?php else: ?>
-                        <div class="subscription-list">
+                    <?php if (!empty($availableSubscriptions)): ?>
+                        <ul class="subscription-list">
                             <?php foreach ($availableSubscriptions as $sub): ?>
-                                <div class="subscription-item">
+                                <li class="subscription-item">
                                     <h3><?php echo htmlspecialchars($sub['name']); ?></h3>
                                     <div class="subscription-details">
-                                        <p>Total Cost: $<?php echo number_format($sub['cost'], 2); ?></p>
-                                        <p>Your Share: $<?php echo number_format($sub['share_amount'], 2); ?></p>
+                                        <p>Total Cost: ₹<?php echo number_format($sub['cost'], 2); ?></p>
+                                        <p>Your Share: ₹<?php echo number_format($sub['share_amount'], 2); ?></p>
                                         <p>Participants: <?php echo $sub['participants']; ?></p>
                                         <p>Created by: <?php echo htmlspecialchars($sub['creator_email']); ?></p>
                                     </div>
-                                </div>
+                                    <form action="process_shared_plan.php" method="POST" style="margin-top: 10px;">
+                                        <input type="hidden" name="action" value="accept_invite">
+                                        <input type="hidden" name="plan_id" value="<?php echo $sub['id']; ?>">
+                                        <button type="submit" class="accept-btn"><i class="fas fa-check"></i> Accept</button>
+                                    </form>
+                                    <form action="process_shared_plan.php" method="POST" style="margin-top: 5px;">
+                                        <input type="hidden" name="action" value="reject_invite">
+                                        <input type="hidden" name="plan_id" value="<?php echo $sub['id']; ?>">
+                                        <button type="submit" class="reject-btn"><i class="fas fa-times"></i> Reject</button>
+                                    </form>
+                                </li>
                             <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <div class="empty-state">
+                            No available shared subscriptions to join.
                         </div>
                     <?php endif; ?>
                 </div>

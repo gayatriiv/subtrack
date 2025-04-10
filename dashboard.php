@@ -228,6 +228,22 @@ try {
             padding: 40px 20px;
             color: rgba(255, 255, 255, 0.7);
         }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336; /* Red color for error text */
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #f44336;
+        }
+
+        .alert-error i {
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -248,17 +264,17 @@ try {
             </div>
 
             <?php if ($monthlyBudget > 0 && $monthlyTotal > $monthlyBudget): ?>
-                <div class="alert">
-                    <i class="fas fa-exclamation-circle"></i>
-                    Warning: Your current spending exceeds your monthly budget by $<?php echo number_format($monthlyTotal - $monthlyBudget, 2); ?>
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Warning: Your current spending exceeds your monthly budget by ₹<?php echo number_format($monthlyTotal - $monthlyBudget, 2); ?>
                 </div>
             <?php endif; ?>
 
             <div class="card">
                 <h3>Monthly Budget Overview</h3>
                 <div class="budget-info">
-                    <span>Monthly Spending: $<?php echo number_format($monthlyTotal, 2); ?></span>
-                    <span>Budget: $<?php echo number_format($monthlyBudget, 2); ?></span>
+                    <span>Monthly Spending: ₹<?php echo number_format($monthlyTotal, 2); ?></span>
+                    <span>Budget: ₹<?php echo number_format($monthlyBudget, 2); ?></span>
                 </div>
                 <div class="progress-container">
                     <div class="progress-bar" style="width: <?php echo $monthlyBudget > 0 ? min(($monthlyTotal / $monthlyBudget) * 100, 100) : 0; ?>%"></div>
@@ -301,7 +317,7 @@ try {
                                     <div class="subscription-category"><?php echo htmlspecialchars($subscription['category_name']); ?></div>
                                 </div>
                                 <div class="subscription-cost">
-                                    $<?php echo number_format($subscription['cost'], 2); ?>
+                                    ₹<?php echo number_format($subscription['cost'], 2); ?>
                                     <span style="font-size: 14px; color: rgba(255,255,255,0.7)">
                                         /<?php echo $subscription['billing_cycle']; ?>
                                     </span>
