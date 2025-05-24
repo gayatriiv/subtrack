@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Subtrack - Subscription Manager
 
 ## Overview
@@ -59,3 +60,7 @@ Subtrack is a simple subscription manager that helps users track their day to da
 ## License
 MIT License
 
+=======
+# subtrack
+a tool to manage your daily subscriptions
+>>>>>>> 9840c577ebdab769b766f0d0d6c3e47003bf977c
